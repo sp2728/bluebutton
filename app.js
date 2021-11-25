@@ -327,7 +327,7 @@ app.get(app.locals.ep.fetch, hasToken, (req, res) => {
     });
 });
 
-app.get('/eob', hasToken, (req, res)=> {
+app.get('eob', hasToken, (req, res)=> {
 
   var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/ExplanationOfBenefit';
 
@@ -342,7 +342,6 @@ app.get('/eob', hasToken, (req, res)=> {
     var resource = entry.resource;
     var results, html, table;
 
-    var eobs;
     if (links !== undefined) {
       logger.debug(JSON.stringify(links, null, 2));
       eobs = action.createEobDict(links);
@@ -357,7 +356,7 @@ app.get('/eob', hasToken, (req, res)=> {
 })
 
 // start the application listening
-app.listen(appPort, () => logger.info('The ' + app.locals.siteName + ' has been successfully started!\nVisit ' + appUri + ' in your favorite browser to try it out...'));
+// app.listen(appPort, () => logger.info('The ' + app.locals.siteName + ' has been successfully started!\nVisit ' + appUri + ' in your favorite browser to try it out...'));
 
 
 module.exports = app;
