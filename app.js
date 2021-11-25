@@ -49,7 +49,7 @@ app.locals.ep = {
 };
 
 // application variables
-const appUrl = 'https://fierce-ocean-20863.herokuapp.com/'
+const appUrl = 'https://fierce-ocean-20863.herokuapp.com'
 const appPort = 3000;
 var appUri = appUrl + ':' + appPort;
 
