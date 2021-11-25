@@ -333,26 +333,21 @@ app.get('/eob', hasToken, (req, res)=> {
 
   axios.defaults.headers.common.authorization = `Bearer ` + token.accessToken;
 
-  axions.get(url)
-  .then(response=> {
+  console.log(url, token.accessToken);
 
+  axios
+  .get(url)
+  .then(response => {
     var data = response.data;
     var links = data.link;
-    var entry = data.entry[0];
-    var resource = entry.resource;
-    var results, html, table;
 
     if (links !== undefined) {
       logger.debug(JSON.stringify(links, null, 2));
       eobs = action.createEobDict(links);
     }
 
-    res.json({
-      token: token.json,
-      eobs: eobs
-    });
-  })
-
+    res.json({ token: token.json, eobs: eobs });
+  });
 })
 
 // start the application listening
