@@ -327,7 +327,7 @@ app.get(app.locals.ep.fetch, hasToken, (req, res) => {
     });
 });
 
-app.get('/eob', hasToken, (req, res)=> {
+app.get('/eob', hasToken, (req, res) => {
 
   var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/ExplanationOfBenefit';
 
@@ -336,18 +336,48 @@ app.get('/eob', hasToken, (req, res)=> {
   console.log(url, token.accessToken);
 
   axios
-  .get(url)
-  .then(response => {
-    var data = response.data;
-    var links = data.link;
+    .get(url)
+    .then(response => {
+      var data = response.data;
+      var links = data.link;
 
-    if (links !== undefined) {
-      logger.debug(JSON.stringify(links, null, 2));
-      eobs = action.createEobDict(links);
-    }
+      if (links !== undefined) {
+        logger.debug(JSON.stringify(links, null, 2));
+        eobs = action.createEobDict(links);
+      }
 
-    res.json({ token: token.json, eobs: eobs });
-  });
+      res.json({ token: token.json, eobs: eobs });
+    });
+});
+
+app.get('/coverage', hasToken, (req, res) => {
+
+  var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Coverage';
+
+  axios.defaults.headers.common.authorization = `Bearer ` + token.accessToken;
+
+  axios
+    .get(url)
+    .then(response => {
+      var data = response.data;
+      var links = data.link;
+      var entry = data.entry[0];
+      var resource = entry.resource;
+      var results, html, table;
+
+      if (resource !== undefined) {
+        html = '<h2>Here is your Benefit Balance Information</h2>';
+        table = action.createBenefitBalanceRecord(resource);
+      }
+      else {
+        html = '<h2>No benefit balance records found!</h2>';
+      }
+      // render results
+      res.json({
+        token: token.json,
+        customHtml: html + table
+      });
+    });
 })
 
 // start the application listening
