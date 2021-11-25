@@ -22,9 +22,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 /**
  * app.locals are variables that are shared between javascript and pug resources
  */
-
 // site name
-app.locals.siteName = "Blue Button OAuth Node.js Sample Client Application";
+app.locals.siteName = "EMR Integration with Blue";
 
 // remote urls
 app.locals.rurl = {
@@ -48,15 +47,19 @@ app.locals.ep = {
   'refresh': '/refresh'
 };
 
-// application variables
-const appUrl = 'https://fierce-ocean-20863.herokuapp.com'
-const appPort = 3000;
-var appUri = appUrl + ':' + appPort;
+'https://fierce-ocean-20863.herokuapp.com'
 
-// if redirecting through a tunnel(i.e. ngrok) then reconfigure the app Uri, sans port
-if (appUrl !== 'http://localhost') {
-  appUri = appUrl;
-}
+// application variables
+// const appUrl = 'http://localhost'
+// const appPort = 3000;
+// var appUri = appUrl + ':' + appPort;
+
+// // if redirecting through a tunnel(i.e. ngrok) then reconfigure the app Uri, sans port
+// if (appUrl !== 'http://localhost') {
+//   appUri = appUrl;
+// }
+
+var appUri = 'https://fierce-ocean-20863.herokuapp.com';
 
 const appRedirectUri = appUri + '/redirect';
 
@@ -225,6 +228,7 @@ app.get(app.locals.ep.logout, (req, res) => {
 app.get(app.locals.ep.fetch, hasToken, (req, res) => {
   var url = req.query.url;
   var command = req.query.action;
+
   logger.debug('Command = ' + command);
 
   // make sure the url exists
@@ -322,6 +326,35 @@ app.get(app.locals.ep.fetch, hasToken, (req, res) => {
       render_error(res, 'Cannot Fetch ' + url + '!', error);
     });
 });
+
+app.get('eob', hasToken, (req, res)=> {
+
+  var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/ExplanationOfBenefit';
+
+  axios.defaults.headers.common.authorization = `Bearer ` + token.accessToken;
+
+  axions.get(url)
+  .then(response=> {
+
+    var data = response.data;
+    var links = data.link;
+    var entry = data.entry[0];
+    var resource = entry.resource;
+    var results, html, table;
+
+    var eobs;
+    if (links !== undefined) {
+      logger.debug(JSON.stringify(links, null, 2));
+      eobs = action.createEobDict(links);
+    }
+
+    res.json({
+      token: token.json,
+      eobs: eobs
+    });
+  })
+
+})
 
 // start the application listening
 app.listen(appPort, () => logger.info('The ' + app.locals.siteName + ' has been successfully started!\nVisit ' + appUri + ' in your favorite browser to try it out...'));
