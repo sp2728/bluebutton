@@ -6,12 +6,20 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "nodemon": "^2.0.15",
+    "pug": "^3.0.2",
+    "simple-oauth2": "^1.5.0",
+    "sprintf-js": "^1.1.2",
+    "store": "^2.0.12",
+    "traverse": "^0.6.6",
+    "winston": "^3.3.3"
   },
   "engines": {
     "node": "16.2.0",

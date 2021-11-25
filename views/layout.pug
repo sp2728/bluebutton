@@ -1,0 +1,36 @@
+include navbar.pug
+
+html
+	block head
+		title #{siteName}
+		meta( charset='utf-8' )
+		meta( http-equiv='X-UA-Compatible', content='IE=edge' )
+		meta( name='viewport', content='width=device-width, initial-scale=1.0' )
+		meta( name='description', content=siteName )
+		// Theme
+		link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.7/slate/bootstrap.min.css", rel="stylesheet")
+	body(style="padding-bottom:10rem;")
+		+navbar('Welcome')
+			+nav_item( ep.homepage ) Home
+			+nav_item( ep.help ) Help
+			if(token)
+				+nav_btn_right( ep.logout, 'btn-danger') Logout
+		block scripts
+			script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
+			script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+			
+			//script.
+			//	$(document).ready(function() {
+			//		$(".nav a").on("click", function(){
+			//			$(".nav").find(".active").removeClass("active");
+			//			$(this).parent().addClass("active");
+			//		});
+			//	});
+		block content
+			.container
+				.jumbotron
+					script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
+					script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+					h2 <span class='text-info'>#{siteName}</span>
+					h3 <span class='text-info'>This is a developer sample application that performs end-to-end queries against the Blue Button FHIR interface.</span>
+					h3 <span class='text-danger'>For Internal Use Only</span>
