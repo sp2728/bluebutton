@@ -327,7 +327,7 @@ app.get(app.locals.ep.fetch, hasToken, (req, res) => {
     });
 });
 
-app.get('eob', hasToken, (req, res)=> {
+app.get('/eob', hasToken, (req, res)=> {
 
   var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/ExplanationOfBenefit';
 
