@@ -8,6 +8,11 @@ const Token = require('./token.js');
 var action = new Action();
 var app = express();
 var token = new Token();
+var userRouter = require('./routes/users');
+var patientRouter = require('./routes/patient');
+
+const database = require("./models");
+const User = database.User;
 
 // init the express application
 app.set("view engine", "pug");
@@ -47,9 +52,7 @@ app.locals.ep = {
   'refresh': '/refresh'
 };
 
-'https://fierce-ocean-20863.herokuapp.com'
 
-// application variables
 // const appUrl = 'http://localhost'
 // const appPort = 3000;
 // var appUri = appUrl + ':' + appPort;
@@ -98,11 +101,36 @@ function render_error(res, title, error) {
 function hasToken(req, res, next) {
   if (token.object === undefined) {
     render_error(res, 'Session Error: a valid token has not been loaded!',
-      'This can happen if the application server is stopped and restarted and a URL other than the home page is visited.  ' +
-      'Click Done below to clear this error and acquire a valid token for this session.');
+    'This can happen if the application server is stopped and restarted and a URL other than the home page is visited.  ' +
+    'Click Done below to clear this error and acquire a valid token for this session.');
+    res.status(401);
+    res.json({message: 'Invaid token or Token does not exists'});
   }
   else {
+    req.token = token;
     next();
+  }
+}
+
+async function  hasAuthorization (req, res, next) {
+  if(!req.body.username){
+    res.status(400);
+    res.json({message:'Invalid request'});
+  }
+  else{
+    const user = await User.findOne({ where:{ username: req.body.username}});
+
+    if(user && !user.hasAuthorized){
+      res.status(401);
+      res.json({message:'User has not authorized'});
+    } 
+    else if(user && user.hasAuthorized){
+      next();
+    }
+    else{
+      res.status(404);
+      res.json({message:'User not found'});
+    }
   }
 }
 
@@ -327,61 +355,9 @@ app.get(app.locals.ep.fetch, hasToken, (req, res) => {
     });
 });
 
-app.get('/eob', hasToken, (req, res) => {
 
-  var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/ExplanationOfBenefit';
+app.use('/', hasToken, hasAuthorization, patientRouter);
 
-  axios.defaults.headers.common.authorization = `Bearer ` + token.accessToken;
-
-  console.log(url, token.accessToken);
-
-  axios
-    .get(url)
-    .then(response => {
-      var data = response.data;
-      var links = data.link;
-
-      if (links !== undefined) {
-        logger.debug(JSON.stringify(links, null, 2));
-        eobs = action.createEobDict(links);
-      }
-
-      res.json({ token: token.json, eobs: eobs });
-    });
-});
-
-app.get('/coverage', hasToken, (req, res) => {
-
-  var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Coverage';
-
-  axios.defaults.headers.common.authorization = `Bearer ` + token.accessToken;
-
-  axios
-    .get(url)
-    .then(response => {
-      var data = response.data;
-      var links = data.link;
-      var entry = data.entry[0];
-      var resource = entry.resource;
-      var results, html, table;
-
-      if (resource !== undefined) {
-        html = '<h2>Here is your Benefit Balance Information</h2>';
-        table = action.createBenefitBalanceRecord(resource);
-      }
-      else {
-        html = '<h2>No benefit balance records found!</h2>';
-      }
-      // render results
-      res.json({
-        token: token.json,
-        customHtml: html + table
-      });
-    });
-})
-
-// start the application listening
-// app.listen(appPort, () => logger.info('The ' + app.locals.siteName + ' has been successfully started!\nVisit ' + appUri + ' in your favorite browser to try it out...'));
-
+app.use('/user', hasToken, userRouter);
 
 module.exports = app;
