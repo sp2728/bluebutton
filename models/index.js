@@ -12,6 +12,7 @@ const mysql = require('mysql2/promise');
 let sequelize;
 
 if (config.use_env_variable) {
+  console.log(config.use_env_variable)
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
@@ -26,7 +27,7 @@ mysql.createConnection({ user: config.username, password: config.password })
   sequelize.sync();
 })
 .then(()=>{
-  console.log('Database synced');
+  console.log('Database synced')
 })
 
 fs
