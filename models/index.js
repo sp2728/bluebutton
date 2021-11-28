@@ -11,7 +11,7 @@ const mysql = require('mysql2/promise');
 
 let sequelize;
 
-mysql.createConnection({ user: config.username, password: config.password })
+mysql.createConnection({ user: config.username, password: '' })
 .then((connection)=>{
   connection.query('CREATE DATABASE IF NOT EXISTS bluebutton;');
   console.log('Connected to database');
