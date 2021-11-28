@@ -52,16 +52,16 @@ app.locals.ep = {
 };
 
 
-// const appUrl = 'http://localhost'
-// const appPort = 3000;
-// var appUri = appUrl + ':' + appPort;
+const appUrl = 'http://localhost'
+const appPort = 3000;
+var appUri = appUrl + ':' + appPort;
 
-// // if redirecting through a tunnel(i.e. ngrok) then reconfigure the app Uri, sans port
-// if (appUrl !== 'http://localhost') {
-//   appUri = appUrl;
-// }
+// if redirecting through a tunnel(i.e. ngrok) then reconfigure the app Uri, sans port
+if (appUrl !== 'http://localhost') {
+  appUri = appUrl;
+}
 
-var appUri = 'https://fierce-ocean-20863.herokuapp.com';
+// var appUri = 'https://fierce-ocean-20863.herokuapp.com';
 
 const appRedirectUri = appUri + '/redirect';
 
@@ -319,7 +319,7 @@ app.get(app.locals.ep.fetch, hasToken, (req, res) => {
           // render results
           res.render('results', {
             token: token.json,
-            customHtml: html + table
+            customHtml: html + table.table
           });
           break;
 
