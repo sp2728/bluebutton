@@ -23,7 +23,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 /**
  * app.locals are variables that are shared between javascript and pug resources
  */
@@ -84,7 +83,7 @@ const authorizationUri = oauth2.authorizationCode.authorizeURL({
  */
 function render_error(res, title, error) {
   logger.error(title, error);
-
+  res.status(400);
   res.render('error', {
     title: title,
     error: error
@@ -103,8 +102,6 @@ function hasToken(req, res, next) {
     render_error(res, 'Session Error: a valid token has not been loaded!',
     'This can happen if the application server is stopped and restarted and a URL other than the home page is visited.  ' +
     'Click Done below to clear this error and acquire a valid token for this session.');
-    res.status(401);
-    res.json({message: 'Invaid token or Token does not exists'});
   }
   else {
     req.token = token;
@@ -356,7 +353,7 @@ app.get(app.locals.ep.fetch, hasToken, (req, res) => {
 });
 
 
-app.use('/', hasToken, hasAuthorization, patientRouter);
+app.use('/patient', hasToken, hasAuthorization, patientRouter);
 
 app.use('/user', hasToken, userRouter);
 

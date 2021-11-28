@@ -4,7 +4,6 @@ const database = require("../models");
 const User = database.User;
 
 router.post('/authorize', async (req, res, next)=> {
-
   if(!req.body.username){
     res.status(400);
     res.json({message:'Invalid request'});
