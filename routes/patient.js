@@ -57,7 +57,7 @@ router.get('/coverage', (req, res) => {
   });
 
   router.get('/profile', (req, res)=> {
-    var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Coverage';
+    var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Profile';
     if (resource !== undefined) {
         html = '<h2>Here is your Patient Record</h2>';
         table = action.createPatientRecord(resource);
@@ -81,7 +81,6 @@ router.get('/coverage', (req, res) => {
       });
 
     });
-
   })
 
 

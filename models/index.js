@@ -11,17 +11,17 @@ const mysql = require('mysql2/promise');
 
 let sequelize;
 
-mysql.createConnection({ user: config.username, password: '' })
-.then((connection)=>{
-  connection.query('CREATE DATABASE IF NOT EXISTS bluebutton;');
-  console.log('Connected to database');
+// mysql.createConnection({ user: config.username, password: config.password })
+// .then((connection)=>{
+//   connection.query('CREATE DATABASE IF NOT EXISTS bluebutton;');
+//   console.log('Connected to database');
 
-  db.User = require('../models/user')(sequelize, DataTypes)
-  sequelize.sync();
-})
-.then(()=>{
-  console.log('Database synced')
-})
+//   db.User = require('../models/user')(sequelize, DataTypes)
+//   sequelize.sync();
+// })
+// .then(()=>{
+//   console.log('Database synced')
+// })
 
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
