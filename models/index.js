@@ -4,14 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const { Sequelize, DataTypes } = require('sequelize');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || 'production';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 const mysql = require('mysql2/promise');
 
 let sequelize;
 
-mysql.createConnection({ user: config.username, password: config.password })
+mysql.createConnection({ user: config.username, password: config.password, host:config.host, database:config.database,port:3306 })
 .then((connection)=>{
   connection.query('CREATE DATABASE IF NOT EXISTS bluebutton;');
   console.log('Connected to database');
