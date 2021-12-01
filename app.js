@@ -47,7 +47,6 @@ app.locals.ep = {
   'refresh': '/refresh'
 };
 
-
 const appUrl = 'http://localhost'
 const appPort = 3000;
 var appUri = appUrl + ':' + appPort;
@@ -57,7 +56,9 @@ if (appUrl !== 'http://localhost') {
   appUri = appUrl;
 }
 
-// var appUri = 'https://fierce-ocean-20863.herokuapp.com';
+if(process.env.NODE_ENV == 'production'){
+  appUri = 'https://fierce-ocean-20863.herokuapp.com';
+}
 
 const appRedirectUri = appUri + '/redirect';
 
