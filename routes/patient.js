@@ -21,7 +21,7 @@ router.get('/eob', (req, res) => {
           eobs = action.createEobDict(links);
         }
   
-        res.json({eobs});
+        res.json({eobs, data});
       });
 });
 

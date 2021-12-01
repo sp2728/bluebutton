@@ -8,11 +8,7 @@ const Token = require('./token.js');
 var action = new Action();
 var app = express();
 var token = new Token();
-var userRouter = require('./routes/users');
 var patientRouter = require('./routes/patient');
-
-const database = require("./models");
-const User = database.User;
 
 // init the express application
 app.set("view engine", "pug");
@@ -52,16 +48,16 @@ app.locals.ep = {
 };
 
 
-// const appUrl = 'http://localhost'
-// const appPort = 3000;
-// var appUri = appUrl + ':' + appPort;
+const appUrl = 'http://localhost'
+const appPort = 3000;
+var appUri = appUrl + ':' + appPort;
 
-// // if redirecting through a tunnel(i.e. ngrok) then reconfigure the app Uri, sans port
-// if (appUrl !== 'http://localhost') {
-//   appUri = appUrl;
-// }
+// if redirecting through a tunnel(i.e. ngrok) then reconfigure the app Uri, sans port
+if (appUrl !== 'http://localhost') {
+  appUri = appUrl;
+}
 
-var appUri = 'https://fierce-ocean-20863.herokuapp.com';
+// var appUri = 'https://fierce-ocean-20863.herokuapp.com';
 
 const appRedirectUri = appUri + '/redirect';
 
@@ -106,28 +102,6 @@ function hasToken(req, res, next) {
   else {
     req.token = token;
     next();
-  }
-}
-
-async function  hasAuthorization (req, res, next) {
-  if(!req.body.username){
-    res.status(400);
-    res.json({message:'Invalid request'});
-  }
-  else{
-    const user = await User.findOne({ where:{ username: req.body.username}});
-
-    if(user && !user.hasAuthorized){
-      res.status(401);
-      res.json({message:'User has not authorized'});
-    } 
-    else if(user && user.hasAuthorized){
-      next();
-    }
-    else{
-      res.status(404);
-      res.json({message:'User not found'});
-    }
   }
 }
 
@@ -353,8 +327,6 @@ app.get(app.locals.ep.fetch, hasToken, (req, res) => {
 });
 
 
-app.use('/patient', hasToken, hasAuthorization, patientRouter);
-
-app.use('/user', hasToken, userRouter);
+app.use('/patient', hasToken, patientRouter);
 
 module.exports = app;
