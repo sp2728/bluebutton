@@ -5,7 +5,7 @@ var action = new Action();
 const axios = require("axios");
 const logger = require('../log.js');
 
-router.get('/eob', (req, res) => {
+router.get('/eob', (req, realres) => {
     var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/ExplanationOfBenefit';
   
     axios.defaults.headers.common.authorization = `Bearer ` + req.token.accessToken;
@@ -14,18 +14,18 @@ router.get('/eob', (req, res) => {
       .get(url)
       .then(response => {
         var data = response.data;
-        var links = data.link;
-  
-        if (links !== undefined) {
-          logger.debug(JSON.stringify(links, null, 2));
-          eobs = action.createEobDict(links);
+        var result=[];
+        var disease = [];
+        for(var i=0;i<data.entry.length;i++){
+            var res = data.entry[i].resource
+            // console.log(res)
+            result.push({id:res.id, billablePeriod:res.billablePeriod,status:res.status, insutance:res.insurance})
         }
-  
-        res.json({eobs});
+        realres.json({result});
       });
 });
 
-router.get('/coverage', (req, res) => {
+router.get('/coverage', (req, realres) => {
     var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Coverage';
 
     axios.defaults.headers.common.authorization = `Bearer ` + req.token.accessToken;
@@ -34,30 +34,40 @@ router.get('/coverage', (req, res) => {
       .get(url)
       .then(response => {
         var data = response.data;
-        var links = data.link;
-        var entry = data.entry[0];
-        var resource = entry.resource;
-        var results, html, table;
-  
-        if (resource !== undefined) {
-          html = '<h2>Here is your Benefit Balance Information</h2>';
-          table = action.createBenefitBalanceRecord(resource);
+        var result=[];
+        var disease = [];
+        var res = (data.entry[0]).resource.extension
+        for (var i=0;i<res.length;i++){
+          if(res[i].hasOwnProperty('valueCoding') && res[i].valueCoding.display!=undefined && !disease.includes(res[i].valueCoding.display)) {
+              disease.push(res[i].valueCoding.display)
+              
+          }
         }
-        else {
-          html = '<h2>No benefit balance records found!</h2>';
-        }
-        // render results
-        res.json({
-          token: req.token.json,
-          customHtml: html + table
-        });
+        var res1 = (data.entry[0]).resource
+        console.log(res1.contract[0].id)
+        result.push({coverage1Id:res1.id,coverage1beneficiary:res1.beneficiary.reference, coverage1start:res1.period.start, coverage1:res1.grouping})
+        var res2 = (data.entry[1]).resource
+        result.push({coverage2Id:res2.id,coverage2beneficiary:res2.beneficiary.reference, coverage2start:res2.period.start, coverage2:res2.grouping})
+        var res3 = (data.entry[2]).resource
+        result.push({coverage3Id:res3.id,coverage3beneficiary:res3.beneficiary.reference, coverage3:res3.grouping})
+        result.push({diseases:disease})
+        realres.json({result})
       });
   });
 
   router.get('/profile', (req, res)=> {
-    var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Coverage';
+    var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Patient';
+    axios.defaults.headers.common.authorization = `Bearer ` + req.token.accessToken;
 
-
+      axios
+      .get(url)
+      .then(response => {
+      var result =[];
+      var data = response.data;
+      var entry = (data.entry[0]).resource
+      result.push({id:entry.id, name:entry.name[0].given+" "+entry.name[0].family, gender: entry.gender, dateofbirth:entry.birthDate, race:entry.extension[0].valueCoding.display, deceasedDate: entry.deceasedDateTime, address: entry.address })
+      res.json(result);
+    });
   })
 
 

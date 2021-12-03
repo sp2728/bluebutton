@@ -206,7 +206,7 @@ class Action {
 		html = html.replace(/class="/g, 'class="info ');
 		
 		logger.debug(html);
-		return html;
+		return {html, data};
 	}
 }
 
