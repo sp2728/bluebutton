@@ -15,12 +15,15 @@ router.get('/eob', (req, realres) => {
       .then(response => {
         var data = response.data;
         var result=[];
-        var disease = [];
-        for(var i=0;i<data.entry.length;i++){
-            var res = data.entry[i].resource
-            // console.log(res)
-            result.push({id:res.id, billablePeriod:res.billablePeriod,status:res.status, insuranceId:res.insurance.coverage.reference})
-        }
+for(var i=0;i<data.entry.length;i++){
+    var res = data.entry[i].resource
+    var diagnos=[]
+    for(var j=0;j<res.diagnosis.length-1;j++){
+        var dis = res.diagnosis[j].diagnosisCodeableConcept.coding[0].display
+        diagnos.push(dis)
+    }
+    result.push({id:res.id, billablePeriod:res.billablePeriod,status:res.status, insuranceId:res.insurance.coverage.reference, payment:res.payment.amount.value,diagnosis:diagnos})
+}
         realres.json({result});
       });
 });
@@ -70,5 +73,27 @@ router.get('/coverage', (req, realres) => {
     });
   })
 
+router.get('/entireData', (req, realres) => {
+    var url = 'https://sandbox.bluebutton.cms.gov/v1/fhir/ExplanationOfBenefit';
+  
+    axios.defaults.headers.common.authorization = `Bearer ` + req.token.accessToken;
+  var eob;
+  var coverage;
+    axios
+      .get(url)
+      .then(response => {
+        var data = response.data;
+        eob=data;
+      });
 
+      var url1 = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Coverage';
+      axios
+      .get(url1)
+      .then(response => {
+        var data = response.data;
+        coverage=data;
+        realres.json({eob,coverage})
+      });
+  
+});
 module.exports = router;
