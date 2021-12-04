@@ -19,7 +19,7 @@ router.get('/eob', (req, realres) => {
         for(var i=0;i<data.entry.length;i++){
             var res = data.entry[i].resource
             // console.log(res)
-            result.push({id:res.id, billablePeriod:res.billablePeriod,status:res.status, insurance:res.insurance})
+            result.push({id:res.id, billablePeriod:res.billablePeriod,status:res.status, insuranceId:res.insurance.coverage.reference})
         }
         realres.json({result});
       });
