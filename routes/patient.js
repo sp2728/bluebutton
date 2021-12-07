@@ -19,7 +19,7 @@ router.get('/eob', async (req, res) => {
     var result = obj.resource;
     var diagnos = [];
 
-    result.diagnosis?.length > 0 && result.diagnosis.map((obj)=> {
+    result.diagnosis?.length-1 > 0 && result.diagnosis.map((obj)=> {
       diagnos.push(obj.diagnosisCodeableConcept.coding[0]?.display)
     })
 
@@ -31,9 +31,9 @@ router.get('/eob', async (req, res) => {
 
     eobResult.push({
       id: result.id,
-      billablePeriod: result.billablePeriod,
+      billablePeriod: result?.billablePeriod||'{}',
       status: result.status,
-      insuranceId: result.insurance.coverage.reference,
+      insuranceId: result?.insurance?.coverage?.reference || '',
       payment: result.payment?.amount?.value || '',
       diagnosis: diagnos,
       careTeam: careTeamArr
