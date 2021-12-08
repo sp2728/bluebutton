@@ -19,8 +19,9 @@ router.get('/eob', async (req, res) => {
     var result = obj.resource;
     var diagnos = [];
 
-    result.diagnosis?.length-1 > 0 && result.diagnosis.map((obj)=> {
-      diagnos.push(obj.diagnosisCodeableConcept.coding[0]?.display)
+    result.diagnosis?.length > 0 && result.diagnosis.map((obj)=> {
+      if(obj.diagnosisCodeableConcept.coding[0].display)
+        diagnos.push(obj.diagnosisCodeableConcept.coding[0].display)
     })
 
     var careTeamArr = [];
