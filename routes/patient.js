@@ -66,7 +66,7 @@ router.get('/coverage', async (req, res) => {
     coverageResult.push({ coverageId: result.id, coveragebeneficiary: result.beneficiary.reference, coveragestart: result.period?.start || '', coverage: result.grouping })
   })
 
-  coverageResult.push({ diseases: disease })
+  coverageResult.push({ reasonsForCoverageEligibility: disease })
   res.json({ result: coverageResult });
 });
 
@@ -133,7 +133,7 @@ router.get('/entireData', async (req, res) => {
     var result = obj.resource;
     coverageResult.push({ coverageId: result.id, coveragebeneficiary: result.beneficiary.reference, coveragestart: result.period?.start || '', coverage: result.grouping })
   })
-  coverageResult.push({ diseases: disease });
+  coverageResult.push({ reasonsForCoverageEligibility: disease });
 
 
   var profileUrl = 'https://sandbox.bluebutton.cms.gov/v1/fhir/Patient';
