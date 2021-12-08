@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
  * app.locals are variables that are shared between javascript and pug resources
  */
 // site name
-app.locals.siteName = "EMR Integration with Blue";
+app.locals.siteName = "EMR Integration with Blue Button";
 
 // remote urls
 app.locals.rurl = {
